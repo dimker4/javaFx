@@ -1,0 +1,8 @@
+<?scenebuilder-stylesheet ./css/style.css?>
+
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<VBox fx:controller="sample.Controller" xmlns:fx="http://javafx.com/fxml" alignment="center">
+    <TextField fx:id="nickField" HBox.hgrow="ALWAYS" promptText="Введи ник" onAction="#saveNick"/>
+</VBox>

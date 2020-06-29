@@ -1,0 +1,24 @@
+#textArea {
+    -fx-padding: 0px 10px 10px 10px;
+    -fx-background-color: pink;
+    -fx-font-size: 20;
+}
+
+#textArea .content {
+    -fx-background-image: url("../img/bg.png");
+}
+
+#btn1 {
+    -fx-pref-height: 50px;
+    -fx-pref-width: 100px;
+    -fx-graphic: url("../img/btn.png");
+}
+
+#textField {
+    -fx-pref-height: 60px;
+    -fx-font-size: 20;
+}
+
+#menuBar {
+    -fx-background-color: pink;
+}
