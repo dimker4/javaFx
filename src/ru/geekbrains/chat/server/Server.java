@@ -8,6 +8,7 @@ import java.util.Scanner;
 public class Server {
     private static Socket clientSocket; //сокет для общения
     private static ServerSocket server; // серверсокет
+    private static Thread t;
 
 
     public static void main(String[] args)
@@ -21,7 +22,7 @@ public class Server {
 
             Scanner in = new Scanner(clientSocket.getInputStream());
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-            new Thread(new Runnable() {
+            t = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     while (true) {
@@ -30,10 +31,10 @@ public class Server {
                             break;
                         }
                         System.out.println("Client: " + str);
-                        out.println("echo: " + str);
                     }
                 }
-            }).start();
+            });
+            t.start();
 
             Scanner sc = new Scanner(System.in);
             while (true) {
@@ -51,6 +52,7 @@ public class Server {
             }
 
             try {
+                t.stop();
                 server.close();
             } catch (IOException e) {
                 e.printStackTrace();
