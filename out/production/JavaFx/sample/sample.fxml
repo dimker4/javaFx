@@ -3,7 +3,7 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.TextField?>
-<?scenebuilder-stylesheet ./css/style.css?>
+<!--<?scenebuilder-stylesheet ./css/style.css?>-->
 <?import java.net.URL?>
 
 <?import javafx.scene.control.MenuBar?>
@@ -22,10 +22,10 @@
             </Menu>
         </menus>
     </MenuBar>
-    <stylesheets><URL value="@./css/style.css"/></stylesheets>
+<!--    <stylesheets><URL value="@css/style.css"/></stylesheets>-->
     <TextArea fx:id="textArea" editable="false" VBox.vgrow="ALWAYS"/>
     <HBox>
         <TextField fx:id="textField" HBox.hgrow="ALWAYS" promptText="Введите сообщение" onAction="#sendMsg"/>
-        <Button fx:id="btn1"  onAction="#sendMsg"/>
+        <Button fx:id="btn1" text="Send" onAction="#sendMsg"/>
     </HBox>
 </VBox>
