@@ -3,29 +3,24 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.TextField?>
-<?scenebuilder-stylesheet ./css/style.css?>
+<!--<?scenebuilder-stylesheet ./css/style.css?>-->
 <?import java.net.URL?>
 
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.PasswordField?>
 <VBox fx:controller="sample.Controller" xmlns:fx="http://javafx.com/fxml" alignment="center">
-    <MenuBar fx:id="menuBar" >
-        <menus>
-            <Menu text="Settings">
-                <items>
-                    <MenuItem text="Set nickname" onAction="#setNick"/>
-                    <SeparatorMenuItem  />
-                    <MenuItem text="Exit" onAction="#handleExitAction"/>
-                </items>
-            </Menu>
-        </menus>
-    </MenuBar>
-    <stylesheets><URL value="@./css/style.css"/></stylesheets>
+    <HBox fx:id = "upperPanel">
+        <TextField HBox.hgrow="ALWAYS" promptText="Логин" fx:id="loginField"/>
+        <PasswordField promptText="Пароль" fx:id="passwordField" onAction="#tryToAuth"/>
+        <Button text="Авторизоваться" onAction="#tryToAuth"/>
+    </HBox>
+<!--    <stylesheets><URL value="@css/style.css"/></stylesheets>-->
     <TextArea fx:id="textArea" editable="false" VBox.vgrow="ALWAYS"/>
-    <HBox>
+    <HBox fx:id="bottomPanel" managed="false" visible="false">
         <TextField fx:id="textField" HBox.hgrow="ALWAYS" promptText="Введите сообщение" onAction="#sendMsg"/>
-        <Button fx:id="btn1"  onAction="#sendMsg"/>
+        <Button fx:id="btn1" text="Send" onAction="#sendMsg"/>
     </HBox>
 </VBox>
