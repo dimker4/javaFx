@@ -70,9 +70,10 @@ public class Server {
         return arr;
     }
 
-    public void broadcastMsg(String msg) {
+    public void broadcastMsg(ClientHandler fromClient, String msg) {
         for (ClientHandler cl: clients) {
-            cl.sendMsg(msg);
+            if (!cl.checkUserInBlacklist(fromClient.getId())) // Не отправляем сообщение кому не надо
+                cl.sendMsg(msg);
         }
     }
 

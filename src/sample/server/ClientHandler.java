@@ -5,7 +5,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ClientHandler {
     private Socket socket;
@@ -13,11 +12,15 @@ public class ClientHandler {
     private DataOutputStream out;
     private Server server;
 
+    private int id;
+    private String nick;
+
+    public int getId() { return id; }
     public String getNick() {
         return nick;
     }
 
-    private String nick;
+
 
     public ClientHandler(Server server, Socket socket) {
         this.socket = socket;
@@ -42,6 +45,7 @@ public class ClientHandler {
                                     sendMsg("/authok");
                                     nick = newNick;
                                     server.subscribe(ClientHandler.this); // Подписываем на все сообщения
+                                    id = AuthService.getId(nick);
                                     break;
                                 } else {
                                     sendMsg(!server.checkClientAuth(newNick) ? "Пользователь уже залогинен" : "Неверный логин/пароль");
@@ -56,15 +60,28 @@ public class ClientHandler {
                                 break;
                             }
 
+                            if (str.startsWith("/blacklist")) { // Добавляет или удаляет пользователя из БЛ
+                                String[] msgPart = str.split(" ");
+                                if (server.getAllClientNicks().contains(msgPart[1])) { // Проверим, что добавляемый пользователь существует
+                                    int id = AuthService.getId(msgPart[1]);
+                                    if (checkUserInBlacklist(id)) {
+                                        sendMsg(String.format("Вы удалили пользователя %s из черного списка", msgPart[1]));
+                                        AuthService.removeFromBlacklist(ClientHandler.this, msgPart[1]);
+                                    } else {
+                                        sendMsg(String.format("Вы добавили пользователя %s в черный список", msgPart[1]));
+                                        AuthService.addToBlacklist(ClientHandler.this, msgPart[1]);
+                                    }
+                                }
+                            }
+
                             String[] msgPart = str.split(" "); // Разобъем сообщение по пробелу
                             if (msgPart[0].startsWith("/")) { // Если начинается с / то проверим, что дальше идет ник
                                 if (server.getAllClientNicks().contains(msgPart[0].substring(1))) {
                                     server.whisperMsg(nick, msgPart[0].substring(1), str);
                                 }
                             } else {
-                                server.broadcastMsg(nick + ": " + str);
+                                server.broadcastMsg(ClientHandler.this, nick + ": " + str);
                             }
-
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -101,6 +118,10 @@ public class ClientHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean checkUserInBlacklist(int id) { // Проверяем на наличие пользователя в бл
+        return AuthService.checkBlacklist(this.id, id) ;
     }
 
     public boolean socketIsClose() {
