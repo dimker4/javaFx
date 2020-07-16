@@ -77,11 +77,14 @@ public class Server {
         }
     }
 
-    public void whisperMsg(String fromNickname, String toNickname, String originalMessage) {
+    public void whisperMsg(ClientHandler fromClient, String toNickname, String originalMessage) {
+        String fromNickname = fromClient.getNick();
         String msg = originalMessage.substring(originalMessage.indexOf(' '));
         for (ClientHandler cl: clients) {
             if (cl.getNick().equals(toNickname) || cl.getNick().equals(fromNickname) ) {
-                cl.sendMsg("* " + fromNickname + ": " + msg);
+                if (!cl.checkUserInBlacklist(fromClient.getId())) {
+                    cl.sendMsg("* " + fromNickname + ": " + msg);
+                }
             }
         }
     }

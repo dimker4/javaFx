@@ -5,12 +5,15 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -24,8 +27,8 @@ import java.util.ResourceBundle;
 
 public class Controller {
     String n;
-    @FXML
-    TextArea textArea;
+//    @FXML
+//    TextArea textArea;
 
     @FXML
     TextField textField;
@@ -45,6 +48,9 @@ public class Controller {
     @FXML
     TextField passwordField;
 
+    @FXML
+    VBox VboxChat;
+
     Socket socket;
     DataInputStream in;
     DataOutputStream out;
@@ -52,6 +58,7 @@ public class Controller {
     final String IP_ADDR = "localhost";
     final int PORT = 8188;
     private boolean isAuthorized;
+    private String myNick;
 
     public void setAuthorized(boolean isAuthorized) {
         this.isAuthorized = isAuthorized;
@@ -117,17 +124,46 @@ public class Controller {
                                 setAuthorized(true);
                                 break;
                             } else {
-                                textArea.appendText(str + "\n");
+                                Platform.runLater(new Runnable() { // Изменение GUI должно делаться в отдельном потоке
+                                    @Override
+                                    public void run() {
+                                        String[] s = str.split(":");
+                                        Label label = new Label(str + "\n");
+                                        VBox vBox = new VBox();
+                                        vBox.getChildren().add(label);
+                                        VboxChat.getChildren().add(vBox);
+                                    }
+                                });
+                                //textArea.appendText(str + "\n");
                             }
                         }
 
                         while (true) {
                             if (isAuthorized) {
                                 String str = in.readUTF(); // Считываем данные из входящего поток
-                                if (str.equalsIgnoreCase("/serverClosed")) {
-                                    break;
+                                if (str.startsWith("/mynick")) {
+                                    String[] s = str.split(" ");
+                                    myNick = s[1];
+                                } else {
+                                    if (str.equalsIgnoreCase("/serverClosed")) {
+                                        break;
+                                    }
+                                    Platform.runLater(new Runnable() { // Изменение GUI должно делаться в отдельном потоке
+                                        @Override
+                                        public void run() {
+                                            String[] s = str.split(":"); // Будем определять по нику, в какую сторону прижать сообщение
+                                            Label label = new Label(str + "\n");
+                                            VBox vBox = new VBox();
+                                            if(s[0].startsWith(myNick)) {
+                                                vBox.setAlignment(Pos.TOP_LEFT);
+                                            } else {
+                                                vBox.setAlignment(Pos.TOP_RIGHT);
+                                            }
+                                            vBox.getChildren().add(label);
+                                            VboxChat.getChildren().add(vBox);
+                                        }
+                                    });
                                 }
-                                textArea.appendText(str + "\n");
                             }
                         }
                     } catch (IOException e) {

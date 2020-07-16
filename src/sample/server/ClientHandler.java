@@ -37,6 +37,7 @@ public class ClientHandler {
                     try {
                         while (true) { // Цикл для авторизации
                             String str = in.readUTF();
+
                             if (str.startsWith("/auth")) {
                                 String[] tokens = str.split(" "); // Разбиваем строку по пробелу, что бы получить login и password
                                 String newNick = AuthService.getNickByLoginAndPass(tokens[1], tokens[2]);
@@ -44,6 +45,7 @@ public class ClientHandler {
                                 if (newNick != null && server.checkClientAuth(newNick)) {
                                     sendMsg("/authok");
                                     nick = newNick;
+                                    sendMsg("/mynick " + nick);
                                     server.subscribe(ClientHandler.this); // Подписываем на все сообщения
                                     id = AuthService.getId(nick);
                                     break;
@@ -77,7 +79,7 @@ public class ClientHandler {
                             String[] msgPart = str.split(" "); // Разобъем сообщение по пробелу
                             if (msgPart[0].startsWith("/")) { // Если начинается с / то проверим, что дальше идет ник
                                 if (server.getAllClientNicks().contains(msgPart[0].substring(1))) {
-                                    server.whisperMsg(nick, msgPart[0].substring(1), str);
+                                    server.whisperMsg(ClientHandler.this, msgPart[0].substring(1), str);
                                 }
                             } else {
                                 server.broadcastMsg(ClientHandler.this, nick + ": " + str);
