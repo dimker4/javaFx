@@ -70,17 +70,21 @@ public class Server {
         return arr;
     }
 
-    public void broadcastMsg(String msg) {
+    public void broadcastMsg(ClientHandler fromClient, String msg) {
         for (ClientHandler cl: clients) {
-            cl.sendMsg(msg);
+            if (!cl.checkUserInBlacklist(fromClient.getId())) // Не отправляем сообщение кому не надо
+                cl.sendMsg(msg);
         }
     }
 
-    public void whisperMsg(String fromNickname, String toNickname, String originalMessage) {
+    public void whisperMsg(ClientHandler fromClient, String toNickname, String originalMessage) {
+        String fromNickname = fromClient.getNick();
         String msg = originalMessage.substring(originalMessage.indexOf(' '));
         for (ClientHandler cl: clients) {
             if (cl.getNick().equals(toNickname) || cl.getNick().equals(fromNickname) ) {
-                cl.sendMsg("* " + fromNickname + ": " + msg);
+                if (!cl.checkUserInBlacklist(fromClient.getId())) {
+                    cl.sendMsg("* " + fromNickname + ": " + msg);
+                }
             }
         }
     }
